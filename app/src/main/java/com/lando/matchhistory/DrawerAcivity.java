@@ -20,14 +20,14 @@ public class DrawerAcivity extends ActionBarActivity {
     //This Icons And Titles Are holded in an Array as you can see
 
     String TITLES[] = {"Profile","Match History","Masteries","Runes"};
-    int ICONS[] = {};//{R.drawable.ic_home,R.drawable.ic_events,R.drawable.ic_mail,R.drawable.ic_shop,R.drawable.ic_travel};
+    int ICONS[] = {R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher};
 
     //Similarly we Create a String Resource for the name and email in the header view
     //And we also create a int resource for profile picture in the header view
 
     String NAME = "Landocomando";
     String EMAIL = "Level 30";
-    int PROFILE =0;// R.drawable.aka;
+    int PROFILE = R.drawable.ic_launcher;
 
     private Toolbar toolbar;                              // Declaring the Toolbar Object
 
@@ -71,7 +71,7 @@ public class DrawerAcivity extends ActionBarActivity {
 
 
         Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
-        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,0,0){
+        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,toolbar,R.string.drawer_open,R.string.drawer_close){
 
             @Override
             public void onDrawerOpened(View drawerView) {

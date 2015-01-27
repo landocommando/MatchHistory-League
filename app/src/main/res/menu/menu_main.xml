@@ -1,0 +1,17 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".MainActivity">
+    <item android:id="@+id/search"
+        android:title="@string/search_title"
+        android:icon="@drawable/ic_action"
+        app:showAsAction="collapseActionView|ifRoom"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
+    <item android:id="@+id/refresh_images" android:title="Refresh Images"
+        android:orderInCategory="99" app:showAsAction="never" />
+    <item android:id="@+id/check_database" android:title="Check Database"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/refresh_matches" android:title="Refresh Matches"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" />
+</menu>

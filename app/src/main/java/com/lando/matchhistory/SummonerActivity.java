@@ -2,14 +2,20 @@ package com.lando.matchhistory;
 
 import android.app.SearchManager;
 import android.content.Intent;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.lando.matchhistory.Adapter.DrawerAdapter;
 import com.lando.matchhistory.AsyncTask.BaseTask;
 import com.lando.matchhistory.AsyncTask.MatchUpdateTask;
 import com.lando.matchhistory.AsyncTask.SummonerUpdateTask;
@@ -32,11 +38,53 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
 
     private MatchHistoryFragment mMatchHistoryFragment;
 
+    /**
+     * Setting up navigation drawer
+     */
+    String TITLES[] = {"Profile","Match History","Masteries","Runes"};
+    int ICONS[] = {R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher};
+    private Toolbar mToolbar;                              // Declaring the Toolbar Object
+
+    RecyclerView mRecyclerView;                           // Declaring RecyclerView
+    DrawerAdapter mAdapter;                               // Declaring Adapter For Recycler View
+    RecyclerView.LayoutManager mLayoutManager;            // Declaring Layout Manager as a linear layout manager
+    DrawerLayout Drawer;                                  // Declaring DrawerLayout
+    ActionBarDrawerToggle mDrawerToggle;                  // Declaring Action Bar Drawer Toggle
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_summoner_search);
+        setContentView(R.layout.activity_summoner);
         mRealm = Realm.getInstance(this);
+        mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(mToolbar);
+
+        mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
+        mRecyclerView.setHasFixedSize(true);                            // Letting the system know that the list objects are of fixed size
+
+        mLayoutManager = new LinearLayoutManager(this);                 // Creating a layout Manager
+        mRecyclerView.setLayoutManager(mLayoutManager);                 // Setting the layout Manager
+        Drawer = (DrawerLayout) findViewById(R.id.DrawerLayout);        // Drawer object Assigned to the view
+        mDrawerToggle = new ActionBarDrawerToggle(this,Drawer,mToolbar,R.string.drawer_open,R.string.drawer_close){
+
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                // code here will execute once the drawer is opened( As I dont want anything happened whe drawer is
+                // open I am not going to put anything here)
+            }
+
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+                // Code here will execute once drawer is closed
+            }
+
+
+
+        }; // Drawer Toggle Object Made
+        Drawer.setDrawerListener(mDrawerToggle); // Drawer Listener set to the Drawer toggle
+        mDrawerToggle.syncState();               // Finally we set the drawer toggle sync State
         handleIntent(getIntent());
     }
 
@@ -94,7 +142,10 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
     private void setup(Summoner summoner){
         mMatchHistoryFragment = MatchHistoryFragment.newInstance(summoner.getId());
 
-
+        mAdapter = new DrawerAdapter(getBaseContext(),TITLES,ICONS,summoner.getName(),summoner.getSummonerLevel(),summoner.getProfileIconId());       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        // And passing the titles,icons,header view name, header view email,
+        // and header view profile picture
+        mRecyclerView.setAdapter(mAdapter);
 
     }
     private void updateMatches(Summoner player){

@@ -41,4 +41,11 @@
 
     </android.support.v4.widget.DrawerLayout>
 
+    <ProgressBar
+        android:visibility="gone"
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_below="@id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
 </RelativeLayout>

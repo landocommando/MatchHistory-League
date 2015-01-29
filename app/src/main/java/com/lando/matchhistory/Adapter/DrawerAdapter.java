@@ -1,5 +1,7 @@
 package com.lando.matchhistory.Adapter;
 
+import android.content.Context;
+import android.os.Environment;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,7 +9,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.lando.matchhistory.ApiClient.ApiClient;
 import com.lando.matchhistory.R;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 /**
  * Created by Lando on 1/27/2015.
@@ -20,11 +26,11 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
     private String mNavTitles[]; // String Array to store the passed titles Value from MainActivity.java
     private int mIcons[];       // Int Array to store the passed icons resource value from MainActivity.java
 
-    private String name;        //String Resource for header View Name
-    private int profile;        //int Resource for header view profile picture
-    private String email;       //String Resource for header view email
+    private String mName;        //String Resource for header View Name
+    private long mProfile;        //int Resource for header view mProfile picture
+    private String mLevel;       //String Resource for header view email
 
-
+    private Context mContext;
     // Creating a ViewHolder which extends the RecyclerView View Holder
     // ViewHolder are used to to store the inflated views in order to recycle them
 
@@ -52,9 +58,9 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
             else{
 
 
-                Name = (TextView) itemView.findViewById(R.id.name);         // Creating Text View object from header.xml for name
+                Name = (TextView) itemView.findViewById(R.id.name);         // Creating Text View object from header.xml for mName
                 email = (TextView) itemView.findViewById(R.id.email);       // Creating Text View object from header.xml for email
-                profile = (ImageView) itemView.findViewById(R.id.circleView);// Creating Image view object from header.xml for profile pic
+                profile = (ImageView) itemView.findViewById(R.id.circleView);// Creating Image view object from header.xml for mProfile pic
                 Holderid = 0;                                                // Setting holder id = 0 as the object being populated are of type header view
             }
         }
@@ -64,23 +70,23 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
 
 
 
-    public DrawerAdapter(String Titles[],int Icons[],String Name,String Email, int Profile){ // MyAdapter Constructor with titles and icons parameter
+    public DrawerAdapter(Context context,String[] titles,int[] icons,String name,long level, long profile){ // MyAdapter Constructor with titles and icons parameter
 
-        // titles, icons, name, email, profile pic are passed from the main activity as we
-        mNavTitles = Titles;                //have seen earlier
-        mIcons = Icons;
-        name = Name;
-        email = Email;
-        profile = Profile;                     //here we assign those passed values to the values we declared here
+        // titles, icons, mName, email, mProfile pic are passed from the main activity as we
+        mNavTitles = titles;                //have seen earlier
+        mIcons = icons;
+        mName = name;
+        mLevel = "Level: "+level;
+        mProfile = profile;                     //here we assign those passed values to the values we declared here
         //in adapter
-
+        mContext = context;
 
 
     }
 
 
 
-    //Below first we ovverride the method onCreateViewHolder which is called when the ViewHolder is
+    //Below first we override the method onCreateViewHolder which is called when the ViewHolder is
     //Created, In this method we inflate the item_row.xml layout if the viewType is Type_ITEM or else we inflate header.xml
     // if the viewType is TYPE_HEADER
     // and pass it to the view holder
@@ -123,9 +129,9 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         }
         else{
 
-            holder.profile.setImageResource(profile);           // Similarly we set the resources for header view
-            holder.Name.setText(name);
-            holder.email.setText(email);
+            loadImage(holder.profile, mProfile+".png");           // Similarly we set the resources for header view
+            holder.Name.setText(mName);
+            holder.email.setText(mLevel);
         }
     }
 
@@ -135,6 +141,10 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
         return mNavTitles.length+1; // the number of items in the list will be +1 the titles including the header view.
     }
 
+    private void loadImage(ImageView i, String filename) {
+        File file = new File(Environment.getExternalStorageDirectory().getPath() + "/LolMatches/images", filename);
+        Picasso.with(mContext).load(file).error(R.drawable.ic_launcher).into(i);
+    }
 
     // Witht the following method we check what type of view is being passed
     @Override

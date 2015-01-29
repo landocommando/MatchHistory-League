@@ -1,26 +1,27 @@
 package com.lando.matchhistory.Models;
 
+import io.realm.RealmObject;
+
 /**
  * Created by Lando on 12/2/2014.
  */
 
-import io.realm.RealmObject;
 
 public class Champion extends RealmObject{
 
     private long id;
+    private Image image;
     private String title;
     private String name;
     private String key;
-    private Image image;
     public Champion(){}
 
-    public Champion(long id, String title, String name, String key, Image image) {
+    public Champion(long id, Image image, String title, String name, String key) {
         this.id = id;
+        this.image = image;
         this.title = title;
         this.name = name;
         this.key = key;
-        this.image = image;
     }
 
     public long getId() {
@@ -29,6 +30,14 @@ public class Champion extends RealmObject{
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public String getTitle() {
@@ -53,13 +62,5 @@ public class Champion extends RealmObject{
 
     public void setKey(String key) {
         this.key = key;
-    }
-
-    public Image getImage() {
-        return image;
-    }
-
-    public void setImage(Image image) {
-        this.image = image;
     }
 }

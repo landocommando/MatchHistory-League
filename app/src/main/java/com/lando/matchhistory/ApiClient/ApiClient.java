@@ -10,8 +10,13 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.lando.matchhistory.MainActivity;
+import com.lando.matchhistory.Models.Champion;
+import com.lando.matchhistory.Models.Image;
+import com.lando.matchhistory.Models.Item;
 import com.lando.matchhistory.Models.Match;
+import com.lando.matchhistory.Models.ProfileIcon;
 import com.lando.matchhistory.Models.Summoner;
+import com.lando.matchhistory.Models.SummonerSpell;
 import com.lando.matchhistory.Models.Version;
 
 import java.util.List;
@@ -112,33 +117,47 @@ public class ApiClient {
         @GET("/api/lol/{region}/v1.4/summoner/by-name/{summonerNames}")
         Map<String,Summoner> getSummoner(@Path("region") String region, @Path("summonerNames") String summonerName,@Query("api_key") String key);
         @GET("/api/lol/static-data/{region}/v1.2/champion")
-        JsonObject getChampionListBeta(@Path("region") String region,@Query("dataById") String databyid,@Query("champData") String data, @Query("api_key") String key);
+        Map<String,JsonObject> getChampionListBeta(@Path("region") String region,@Query("dataById") String databyid,@Query("champData") String data, @Query("api_key") String key);
         @GET("/api/lol/static-data/{region}/v1.2/item")
-        JsonObject getItemList(@Path("region") String region,@Query("itemListData") String itemListDat, @Query("api_key") String key);
+        Map<String,JsonObject> getItemList(@Path("region") String region,@Query("itemListData") String itemListDat, @Query("api_key") String key);
         @GET("/api/lol/static-data/{region}/v1.2/summoner-spell")
-        JsonObject getSummonerSpells(@Path("region") String region,@Query("spellData") String spellData, @Query("api_key") String key);
+        Map<String,JsonObject> getSummonerSpells(@Path("region") String region,@Query("spellData") String spellData, @Query("api_key") String key);
 
-        @GET("https://ddragon.leagueoflegends.com/realms/{region}.json")
-        Version.Data getVersion(@Path("region") String region);
+
     }
 
     public static class DataDragonApi{
         private String basePath = "http://ddragon.leagueoflegends.com/cdn/";
-        public String getCharacterImage(String patch, String name){
+
+        public <T extends RealmObject> String getImage(String patch, String name,Class<T> clazz){
+            if(clazz.getSimpleName().compareTo(Champion.class.getSimpleName())==0){
+                return getCharacterImage(patch, name);
+            }else if(clazz.getSimpleName().compareTo(Item.class.getSimpleName())==0){
+                return getItemImage(patch,name);
+            }else if(clazz.getSimpleName().compareTo(SummonerSpell.class.getSimpleName())==0){
+                return getSummonerSpellImage(patch,name);
+            }else if(clazz.getSimpleName().compareTo(ProfileIcon.class.getSimpleName())==0){
+                return getProfileImage(patch,name);
+            }
+            return "";
+        }
+        private String getCharacterImage(String patch, String name){
             return basePath+patch+"/img/champion/"+name;
         }
-        public String getItemImage(String patch, String id){
+        private String getItemImage(String patch, String id){
             return basePath+patch+"/img/item/"+id;
         }
-        public String getProfileImage(String patch,String id){
-            return basePath+patch+"/img/profileicon/"+id+".png";
+        private String getProfileImage(String patch,String id){
+            return basePath+patch+"/img/profileicon/"+id;
         }
-        public String getSummonerSpellImage(String patch, String id){
+        private String getSummonerSpellImage(String patch, String id){
             return basePath+patch+"/img/spell/"+id;
         }
     }
     public static interface DataDragonApiInterface{
         @GET("/realms/{region}.json")
         Version getVersion(@Path("region") String region);
+        @GET("/cdn/{patch}/data/{region}/profileicon.json")
+        Map<String,JsonObject> getProfileIcons(@Path("patch") String patch,@Path("region") String region);
     }
 }

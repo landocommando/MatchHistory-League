@@ -38,6 +38,7 @@ public class SummonerUpdateTask extends AsyncTask<Void,Void,Void>{
     protected Void doInBackground(Void... params) {
         Realm realm = null;
         Summoner summoner = null;
+        Summoner oldsummoner = null;
 
         try{
             realm = Realm.getInstance(mContext);
@@ -45,6 +46,10 @@ public class SummonerUpdateTask extends AsyncTask<Void,Void,Void>{
             Map<String,Summoner> summonerMap = ApiClient.getLeagueApiClient().getSummoner(mRegion, mSummonerName, mContext.getResources().getString(R.string.api_key));
 
             summoner = summonerMap.get(mSummonerName);
+            if((oldsummoner = realm.where(Summoner.class).equalTo("id",summoner.getId()).findFirst())!=null){
+                summoner.setMatches(oldsummoner.getMatches());
+                oldsummoner.removeFromRealm();
+            }
             summoner = realm.copyToRealm(summoner);
             Log.v(MainActivity.DEBUG_INFO, summoner.getName()+" was created");
             realm.commitTransaction();

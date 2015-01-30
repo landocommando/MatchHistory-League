@@ -1,6 +1,7 @@
 package com.lando.matchhistory;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
@@ -23,7 +24,7 @@ import com.lando.matchhistory.Provider.RecentSuggestionProvider;
 import io.realm.Realm;
 
 
-public class MainActivity extends ActionBarActivity implements BaseTask.UpdateResponse, SearchView.OnQueryTextListener {
+public class MainActivity extends ActionBarActivity implements BaseTask.UpdateResponse {
 
     public static final String DEBUG_INFO = "MatchHistory";
     private ProgressBar mProgressBar;
@@ -43,8 +44,6 @@ public class MainActivity extends ActionBarActivity implements BaseTask.UpdateRe
 
         setSupportActionBar(mToolbar);
 
-
-
     }
 
 
@@ -57,9 +56,8 @@ public class MainActivity extends ActionBarActivity implements BaseTask.UpdateRe
                 (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         mSearchView =
                 (SearchView) menu.findItem(R.id.search).getActionView();
-        mSearchView.setSearchableInfo(
-                searchManager.getSearchableInfo(getComponentName()));
-        mSearchView.setOnQueryTextListener(this);
+        ComponentName cn = new ComponentName(this, SummonerActivity.class);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
         return true;
     }
 
@@ -112,22 +110,4 @@ public class MainActivity extends ActionBarActivity implements BaseTask.UpdateRe
         mProgressBar.setVisibility(View.GONE);
         Log.v(DEBUG_INFO,"Complete");
     }
-
-
-
-    @Override
-    public boolean onQueryTextSubmit(String s) {
-        SearchRecentSuggestions suggestions = new SearchRecentSuggestions (this, RecentSuggestionProvider.AUTHORITY,RecentSuggestionProvider.MODE);
-        suggestions.saveRecentQuery(s,null);
-
-
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String s) {
-        return false;
-    }
-
-
 }

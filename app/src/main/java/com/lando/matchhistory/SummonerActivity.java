@@ -21,6 +21,7 @@ import com.lando.matchhistory.AsyncTask.MatchUpdateTask;
 import com.lando.matchhistory.AsyncTask.SummonerUpdateTask;
 import com.lando.matchhistory.AsyncTask.VersionUpdateTask;
 import com.lando.matchhistory.Fragment.MatchHistoryFragment;
+import com.lando.matchhistory.Models.ProfileIcon;
 import com.lando.matchhistory.Models.Summoner;
 
 import io.realm.Realm;
@@ -57,6 +58,7 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
         setContentView(R.layout.activity_summoner);
         mRealm = Realm.getInstance(this);
         mToolbar = (Toolbar) findViewById(R.id.tool_bar);
+        mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         setSupportActionBar(mToolbar);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.RecyclerView); // Assigning the RecyclerView Object to the xml View
@@ -136,13 +138,14 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
                     setup(summoner);
                 }
             });
+            mSummonerTask.execute((Void)null);
 
         }
     }
     private void setup(Summoner summoner){
         mMatchHistoryFragment = MatchHistoryFragment.newInstance(summoner.getId());
-
-        mAdapter = new DrawerAdapter(getBaseContext(),TITLES,ICONS,summoner.getName(),summoner.getSummonerLevel(),summoner.getProfileIconId());       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
+        ProfileIcon pi = mRealm.where(ProfileIcon.class).equalTo("id",summoner.getProfileIconId()).findFirst(); //get ProfileIcon for summoner
+        mAdapter = new DrawerAdapter(getBaseContext(),TITLES,ICONS,summoner.getName(),summoner.getSummonerLevel(),pi.getImage().getFull());       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
         // And passing the titles,icons,header view name, header view email,
         // and header view profile picture
         mRecyclerView.setAdapter(mAdapter);

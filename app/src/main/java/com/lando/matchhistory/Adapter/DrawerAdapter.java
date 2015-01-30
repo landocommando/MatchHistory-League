@@ -10,10 +10,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lando.matchhistory.ApiClient.ApiClient;
+import com.lando.matchhistory.Models.ProfileIcon;
 import com.lando.matchhistory.R;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+
+import io.realm.Realm;
 
 /**
  * Created by Lando on 1/27/2015.
@@ -27,7 +30,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
     private int mIcons[];       // Int Array to store the passed icons resource value from MainActivity.java
 
     private String mName;        //String Resource for header View Name
-    private long mProfile;        //int Resource for header view mProfile picture
+    private String mProfile;        //int Resource for header view mProfile picture
     private String mLevel;       //String Resource for header view email
 
     private Context mContext;
@@ -70,7 +73,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
 
 
 
-    public DrawerAdapter(Context context,String[] titles,int[] icons,String name,long level, long profile){ // MyAdapter Constructor with titles and icons parameter
+    public DrawerAdapter(Context context,String[] titles,int[] icons,String name,long level, String profile){ // MyAdapter Constructor with titles and icons parameter
 
         // titles, icons, mName, email, mProfile pic are passed from the main activity as we
         mNavTitles = titles;                //have seen earlier
@@ -128,8 +131,7 @@ public class DrawerAdapter extends RecyclerView.Adapter<DrawerAdapter.ViewHolder
             holder.imageView.setImageResource(mIcons[position -1]);// Settimg the image with array of our icons
         }
         else{
-
-            loadImage(holder.profile, mProfile+".png");           // Similarly we set the resources for header view
+            loadImage(holder.profile,mProfile);           // Similarly we set the resources for header view
             holder.Name.setText(mName);
             holder.email.setText(mLevel);
         }

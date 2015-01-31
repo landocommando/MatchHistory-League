@@ -1,13 +1,17 @@
 package com.lando.matchhistory;
 
 import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -36,14 +40,14 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
     private boolean mIsDownloadInProgress = false;
     private SummonerUpdateTask mSummonerTask;
     private BaseTask mTask;
-
+    private SearchView mSearchView;
     private MatchHistoryFragment mMatchHistoryFragment;
 
     /**
      * Setting up navigation drawer
      */
     String TITLES[] = {"Profile","Match History","Masteries","Runes"};
-    int ICONS[] = {R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher,R.drawable.ic_launcher};
+    int ICONS[] = {R.drawable.profile,R.drawable.history,R.drawable.mastery,R.drawable.rune};
     private Toolbar mToolbar;                              // Declaring the Toolbar Object
 
     RecyclerView mRecyclerView;                           // Declaring RecyclerView
@@ -94,14 +98,22 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_summoner_search, menu);
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        SearchManager searchManager =
+                (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        mSearchView =
+                (SearchView) menu.findItem(R.id.search).getActionView();
+        ComponentName cn = new ComponentName(this, SummonerActivity.class);
+        mSearchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
         return true;
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
+        mSearchView.clearFocus();
+        mSearchView.setIconified(true);
         handleIntent(intent);
+        super.onNewIntent(intent);
     }
 
     @Override
@@ -134,7 +146,7 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
                     mSummonerTask.setListener(null);
                     mSummonerTask = null;
                     //got the id now
-                    Summoner summoner  = mRealm.where(Summoner.class).equalTo("name",query).findFirst();
+                    Summoner summoner  = mRealm.where(Summoner.class).equalTo("name",query,false).findFirst();
                     setup(summoner);
                 }
             });

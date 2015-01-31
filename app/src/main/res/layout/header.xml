@@ -12,8 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="56dp"
         android:orientation="vertical"
-        android:layout_toRightOf="@+id/circleView"
-        android:layout_centerVertical="true">
+        android:layout_alignParentBottom="true">
 
         <TextView
             android:id="@+id/name"

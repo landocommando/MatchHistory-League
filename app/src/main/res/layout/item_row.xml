@@ -9,11 +9,11 @@
 
 
     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:id="@+id/rowIcon"
         android:paddingLeft="16dp"
-        android:src="@drawable/ic_launcher"/>
+        android:src="@drawable/rune"/>
 
     <TextView
         android:layout_width="wrap_content"
@@ -22,6 +22,7 @@
         android:paddingTop="4dp"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="Medium Text"
-        android:id="@+id/rowText" />
+        android:id="@+id/rowText"
+        android:layout_gravity="center_vertical" />
 
 </LinearLayout>

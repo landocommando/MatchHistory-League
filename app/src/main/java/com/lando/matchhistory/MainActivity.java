@@ -97,9 +97,6 @@ public class MainActivity extends ActionBarActivity implements BaseTask.UpdateRe
         mTask.setListener(this);
         mIsDownloadInProgress = true;
         mProgressBar.setVisibility(View.VISIBLE);
-        if(mTask instanceof MatchUpdateTask)
-            ((MatchUpdateTask)mTask).execute((Void)null);
-        else if (mTask instanceof VersionUpdateTask)
             ((VersionUpdateTask)mTask).execute((Void) null);
     }
     @Override

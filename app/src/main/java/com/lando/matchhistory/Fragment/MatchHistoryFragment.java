@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -16,6 +17,8 @@ import com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView;
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 import com.lando.matchhistory.Adapter.MatchAdapter;
+import com.lando.matchhistory.AsyncTask.MatchUpdateTask;
+import com.lando.matchhistory.Models.Summoner;
 import com.lando.matchhistory.R;
 
 /**
@@ -26,14 +29,14 @@ import com.lando.matchhistory.R;
  * Use the {@link MatchHistoryFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MatchHistoryFragment extends Fragment implements ObservableScrollViewCallbacks {
+public class MatchHistoryFragment extends Fragment implements ObservableScrollViewCallbacks,MatchUpdateTask.MatchUpdateResponse {
     // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String SUMMONER_ID = "id";
 
     private MatchAdapter mMatchAdapter;
     private long mPlayerId;
-
+    private MatchUpdateTask mTask;
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     private OnFragmentInteractionListener mListener;
 
     /**
@@ -67,18 +70,37 @@ public class MatchHistoryFragment extends Fragment implements ObservableScrollVi
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_match_history, container, false);
-        ObservableRecyclerView rc = (ObservableRecyclerView) v.findViewById(R.id.history_recycler_view);
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
+        mSwipeRefreshLayout = (SwipeRefreshLayout)inflater.inflate(R.layout.fragment_match_history, container, false);
+        ObservableRecyclerView rc = (ObservableRecyclerView) mSwipeRefreshLayout.findViewById(R.id.history_recycler_view);
+        final LinearLayoutManager layoutParams = new LinearLayoutManager(getActivity());
 
         mMatchAdapter = new MatchAdapter(getActivity(),mPlayerId);
 
         rc.setHasFixedSize(true);
-
-        rc.setLayoutManager(layoutManager);
+        rc.setLayoutManager(layoutParams);
         rc.setAdapter(mMatchAdapter);
         rc.setScrollViewCallbacks(this);
-        return v;
+
+        //a fix to allow swiperefreshlayout to refresh
+        rc.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int topRowVerticalPosition =
+                        (recyclerView == null || recyclerView.getChildCount() == 0) ? 0 : recyclerView.getChildAt(0).getTop();
+                mSwipeRefreshLayout.setEnabled(topRowVerticalPosition >= 0);
+            }
+        });
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mSwipeRefreshLayout.setRefreshing(true);
+                mTask = new MatchUpdateTask(getActivity(), mPlayerId, "na");
+                mTask.setListener(MatchHistoryFragment.this);
+                mTask.execute((Void) null);
+            }
+        });
+        return mSwipeRefreshLayout;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -94,8 +116,8 @@ public class MatchHistoryFragment extends Fragment implements ObservableScrollVi
         try {
             mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+            //throw new ClassCastException(activity.toString()
+                  //  + " must implement OnFragmentInteractionListener");
         }
     }
 
@@ -104,6 +126,13 @@ public class MatchHistoryFragment extends Fragment implements ObservableScrollVi
         super.onDetach();
 
         mListener = null;
+    }
+
+    @Override
+    public void processFinish(boolean finished) {
+        mSwipeRefreshLayout.setRefreshing(false);
+        mTask.setListener(null);
+        mTask = null;
     }
 
     /**
@@ -144,6 +173,7 @@ public class MatchHistoryFragment extends Fragment implements ObservableScrollVi
             if (!ab.isShowing()) {
                 ab.show();
             }
+
         }
     }
 }

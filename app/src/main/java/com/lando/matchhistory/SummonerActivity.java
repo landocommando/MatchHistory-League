@@ -20,11 +20,12 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.lando.matchhistory.Adapter.DrawerAdapter;
-import com.lando.matchhistory.AsyncTask.BaseTask;
-import com.lando.matchhistory.AsyncTask.MatchUpdateTask;
 import com.lando.matchhistory.AsyncTask.SummonerUpdateTask;
 import com.lando.matchhistory.AsyncTask.VersionUpdateTask;
+import com.lando.matchhistory.Fragment.MasteriesFragment;
 import com.lando.matchhistory.Fragment.MatchHistoryFragment;
+import com.lando.matchhistory.Fragment.ProfileFragment;
+import com.lando.matchhistory.Fragment.RuneFragment;
 import com.lando.matchhistory.Models.ProfileIcon;
 import com.lando.matchhistory.Models.Summoner;
 
@@ -32,16 +33,20 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 
 
-public class SummonerActivity extends ActionBarActivity implements BaseTask.UpdateResponse{
+public class SummonerActivity extends ActionBarActivity{
 
     public static final String DEBUG_INFO = "MatchHistory";
     private Realm mRealm;
     private ProgressBar mProgressBar;
     private boolean mIsDownloadInProgress = false;
     private SummonerUpdateTask mSummonerTask;
-    private BaseTask mTask;
     private SearchView mSearchView;
+
+    //Fragments that relate to the navigation drawer
+    private ProfileFragment mProfileFragment;
     private MatchHistoryFragment mMatchHistoryFragment;
+    private MasteriesFragment mMasteriesFragment;
+    private RuneFragment mRuneFragment;
 
     /**
      * Setting up navigation drawer
@@ -155,37 +160,22 @@ public class SummonerActivity extends ActionBarActivity implements BaseTask.Upda
         }
     }
     private void setup(Summoner summoner){
+        mProfileFragment = ProfileFragment.newInstance("","");
         mMatchHistoryFragment = MatchHistoryFragment.newInstance(summoner.getId());
+        mMasteriesFragment = MasteriesFragment.newInstance("","");
+        mRuneFragment = RuneFragment.newInstance("","");
+
         ProfileIcon pi = mRealm.where(ProfileIcon.class).equalTo("id",summoner.getProfileIconId()).findFirst(); //get ProfileIcon for summoner
         mAdapter = new DrawerAdapter(getBaseContext(),TITLES,ICONS,summoner.getName(),summoner.getSummonerLevel(),pi.getImage().getFull());       // Creating the Adapter of MyAdapter class(which we are going to see in a bit)
         // And passing the titles,icons,header view name, header view email,
         // and header view profile picture
         mRecyclerView.setAdapter(mAdapter);
 
+        getFragmentManager().beginTransaction()
+                .add(R.id.container, mMatchHistoryFragment).commit();
+
     }
-    private void updateMatches(Summoner player){
-        if (mIsDownloadInProgress)
-            return;
-        mTask = new MatchUpdateTask(this,player.getName(),"na");
-        executeTask();
-    }
-    private void executeTask(){
-        mTask.setListener(this);
-        mIsDownloadInProgress = true;
-        mProgressBar.setVisibility(View.VISIBLE);
-        if(mTask instanceof MatchUpdateTask)
-            ((MatchUpdateTask)mTask).execute((Void)null);
-        else if (mTask instanceof VersionUpdateTask)
-            ((VersionUpdateTask)mTask).execute((Void) null);
-    }
-    @Override
-    public void processFinish() {
-        mTask.setListener(null);
-        mTask = null;
-        mIsDownloadInProgress = false;
-        mProgressBar.setVisibility(View.GONE);
-        Log.v(DEBUG_INFO, "Complete");
-    }
+
     @Override
     protected void onResume() {
         super.onResume();

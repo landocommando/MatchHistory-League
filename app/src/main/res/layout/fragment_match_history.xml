@@ -1,16 +1,16 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<android.support.v4.widget.SwipeRefreshLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.lando.matchhistory.Fragment.MatchHistoryFragment">
-
+    >
 
     <com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/tool_bar"
         android:id="@+id/history_recycler_view"
-        >
+        />
+</android.support.v4.widget.SwipeRefreshLayout>
 
-    </com.github.ksoichiro.android.observablescrollview.ObservableRecyclerView>
-
-</FrameLayout>
